@@ -310,20 +310,28 @@
     </div>  
     <div class="nav-buttons">
       <% if(loggedInUser != null) { %>
-        <a class="nav-btn" href="my-orders"><i class="fa-solid fa-receipt"></i> Orders</a>
-        <a class="nav-btn" href="profile"><i class="fa-solid fa-circle-user"></i> <%= loggedInUser.getName().split(" ")[0] %></a>
-        <% if("Admin".equalsIgnoreCase(loggedInUser.getRole())) { %>
-          <a class="nav-btn" href="admin-dashboard" style="background:#4338ca; border-color:#4338ca; color:white;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+        <% if(com.foodapp.Servlets.LoginServlet.isAdminRole(loggedInUser)) { %>
+          <a class="nav-btn" href="admin-dashboard" style="background:#4338ca; border-color:#4338ca; color:white;"><i class="fa-solid fa-shield-halved"></i> Admin Portal</a>
+        <% } else { %>
+          <a class="nav-btn" href="my-orders"><i class="fa-solid fa-receipt"></i> Orders</a>
+          <a class="nav-btn" href="profile"><i class="fa-solid fa-circle-user"></i> <%= loggedInUser.getName().split(" ")[0] %></a>
         <% } %>
+        <a class="nav-btn" href="cart.jsp">
+          <i class="fa-solid fa-cart-shopping"></i> Cart
+          <% if (cartCount > 0) { %>
+            <span class="cart-badge"><%= cartCount %></span>
+          <% } %>
+        </a>
+        <a class="nav-btn" href="logout" style="background:#fee2e2; border-color:#fca5a5; color:#dc2626;" title="Sign Out"><i class="fa-solid fa-power-off"></i></a>
       <% } else { %>
         <a class="nav-btn" href="login.jsp">Sign In <i class="fa-solid fa-right-to-bracket"></i></a>
+        <a class="nav-btn" href="cart.jsp">
+          <i class="fa-solid fa-cart-shopping"></i> Cart
+          <% if (cartCount > 0) { %>
+            <span class="cart-badge"><%= cartCount %></span>
+          <% } %>
+        </a>
       <% } %>
-      <a class="nav-btn" href="cart.jsp">
-        <i class="fa-solid fa-cart-shopping"></i> Cart
-        <% if (cartCount > 0) { %>
-          <span class="cart-badge"><%= cartCount %></span>
-        <% } %>
-      </a>
     </div>
   </nav>
 

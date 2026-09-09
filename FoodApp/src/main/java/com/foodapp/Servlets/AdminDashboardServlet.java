@@ -28,12 +28,30 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet({"/admin", "/admin-dashboard"})
 public class AdminDashboardServlet extends HttpServlet {
 
+    private boolean checkAdminAuthorization(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        HttpSession session = req.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+
+        if (user == null) {
+            resp.sendRedirect("login.jsp?error=Please+login+with+Admin+credentials");
+            return false;
+        }
+
+        if (!LoginServlet.isAdminRole(user)) {
+            // Customer attempted to access admin portal -> protect admin access
+            resp.sendRedirect("home?error=Access+Denied:+Admin+authorization+required");
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        User loggedInUser = (User) session.getAttribute("user");
+        if (!checkAdminAuthorization(req, resp)) {
+            return;
+        }
 
-        // Optional: allow admin access or demo preview
         OrderDAO orderDAO = new OrderDAOImpl();
         RestaurantDAO restaurantDAO = new RestaurantDAOImpl();
         MenuDAO menuDAO = new MenuDAOImpl();
@@ -44,7 +62,7 @@ public class AdminDashboardServlet extends HttpServlet {
         List<Menu> allMenuItems = menuDAO.getAllMenu();
         List<User> allUsers = userDAO.getAllUsers();
 
-        // Calculate analytics
+        // Calculate business KPIs
         double totalRevenue = 0;
         int activeOrders = 0;
         int completedOrders = 0;
@@ -60,7 +78,7 @@ public class AdminDashboardServlet extends HttpServlet {
             }
         }
 
-        // Create restaurant lookup map
+        // Restaurant Name lookup (safe)
         Map<Integer, String> restaurantNames = new HashMap<>();
         if (allRestaurants != null) {
             for (Restaurant r : allRestaurants) {
@@ -68,18 +86,22 @@ public class AdminDashboardServlet extends HttpServlet {
             }
         }
 
-        // Create user lookup map
+        // Safe User Name lookup ONLY (never expose passwords or sensitive private info)
         Map<Integer, String> userNames = new HashMap<>();
+        int customerCount = 0;
         if (allUsers != null) {
             for (User u : allUsers) {
                 userNames.put(u.getUserid(), u.getName());
+                if (!LoginServlet.isAdminRole(u)) {
+                    customerCount++;
+                }
             }
         }
 
         req.setAttribute("allOrders", allOrders);
         req.setAttribute("allRestaurants", allRestaurants);
         req.setAttribute("allMenuItems", allMenuItems);
-        req.setAttribute("allUsers", allUsers);
+        req.setAttribute("customerCount", customerCount);
         req.setAttribute("restaurantNames", restaurantNames);
         req.setAttribute("userNames", userNames);
         req.setAttribute("totalRevenue", totalRevenue);
@@ -91,6 +113,10 @@ public class AdminDashboardServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!checkAdminAuthorization(req, resp)) {
+            return;
+        }
+
         String action = req.getParameter("action");
         OrderDAO orderDAO = new OrderDAOImpl();
 

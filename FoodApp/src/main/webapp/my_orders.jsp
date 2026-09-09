@@ -205,12 +205,13 @@
   <nav class="navbar">
     <div class="logo"><a href="home">FoodZone 🍴</a></div>
     <div class="nav-buttons">
-      <a class="nav-btn" href="home"><i class="fa-solid fa-utensils"></i> Browse Restaurants</a>
+      <a class="nav-btn" href="home"><i class="fa-solid fa-utensils"></i> Browse Food</a>
       <a class="nav-btn" href="cart.jsp"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
       <% if (loggedInUser != null) { %>
-        <span style="display: flex; align-items: center; color: white; font-weight: bold; margin-left: 6px;">
-          <i class="fa-solid fa-circle-user" style="margin-right: 6px;"></i> <%= loggedInUser.getName().split(" ")[0] %>
-        </span>
+        <a class="nav-btn" href="profile"><i class="fa-solid fa-circle-user"></i> <%= loggedInUser.getName().split(" ")[0] %></a>
+        <a class="nav-btn" href="logout" style="background:#fee2e2; border-color:#fca5a5; color:#dc2626;" title="Sign Out"><i class="fa-solid fa-power-off"></i></a>
+      <% } else { %>
+        <a class="nav-btn" href="login.jsp">Sign In</a>
       <% } %>
     </div>
   </nav>

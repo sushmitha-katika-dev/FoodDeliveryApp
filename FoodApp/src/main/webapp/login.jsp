@@ -43,8 +43,39 @@
       border-radius: 18px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       border: 1px solid #eee;
+    }
+
+    .role-tabs {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 22px;
+      gap: 4px;
+    }
+
+    .role-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #64748b;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .role-tab.active {
+      background: white;
+      color: #ff6f61;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
     .login-container h2 {
@@ -55,10 +86,10 @@
     }
 
     .login-subtitle {
-      font-size: 14px;
+      font-size: 13.5px;
       color: #666;
       text-align: center;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     .login-container label {
@@ -136,12 +167,23 @@
       text-align: center;
     }
 
+    .success-message {
+      background-color: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      color: #2e7d32;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 13.5px;
+      text-align: center;
+    }
+
     .demo-box {
       background: #fafafa;
       border: 1px dashed #ffd8cc;
       border-radius: 10px;
-      padding: 12px;
-      margin-top: 20px;
+      padding: 14px;
+      margin-top: 22px;
       text-align: center;
     }
 
@@ -157,7 +199,7 @@
       background: white;
       border: 1px solid #ffd1cb;
       color: #333;
-      padding: 6px 12px;
+      padding: 7px 12px;
       border-radius: 14px;
       font-size: 12px;
       font-weight: 600;
@@ -173,6 +215,30 @@
     }
   </style>
   <script>
+    function switchRole(role) {
+      const custTab = document.getElementById('custTab');
+      const adminTab = document.getElementById('adminTab');
+      const title = document.getElementById('loginTitle');
+      const subtitle = document.getElementById('loginSubtitle');
+      const regLink = document.getElementById('regLinkSection');
+
+      if (role === 'admin') {
+        adminTab.classList.add('active');
+        custTab.classList.remove('active');
+        title.innerText = 'Admin & Merchant Portal';
+        subtitle.innerText = 'Sign in to manage kitchen orders & operations';
+        regLink.style.display = 'none';
+        fillDemo('admin@foodzone.com', 'admin123');
+      } else {
+        custTab.classList.add('active');
+        adminTab.classList.remove('active');
+        title.innerText = 'Welcome Back!';
+        subtitle.innerText = 'Ready to feast on your favorite food?';
+        regLink.style.display = 'block';
+        fillDemo('katikasushmitha7228@gmail.com', 'Sushmitha@06');
+      }
+    }
+
     function fillDemo(email, pass) {
       document.getElementById('email').value = email;
       document.getElementById('password').value = pass;
@@ -186,22 +252,43 @@
   </div>
 
   <div class="login-container">
-    <h2>Welcome Back!</h2>
-    <p class="login-subtitle">Ready to feast on your favorite food?</p>
+    <!-- Role Switch Tabs -->
+    <div class="role-tabs">
+      <div id="custTab" class="role-tab active" onclick="switchRole('customer')">
+        <i class="fa-solid fa-user"></i> Customer Login
+      </div>
+      <div id="adminTab" class="role-tab" onclick="switchRole('admin')">
+        <i class="fa-solid fa-shield-halved"></i> Admin Portal
+      </div>
+    </div>
 
-    <!-- Error message -->
+    <h2 id="loginTitle">Welcome Back!</h2>
+    <p class="login-subtitle" id="loginSubtitle">Ready to feast on your favorite food?</p>
+
+    <!-- Success message on logout -->
+    <% if("true".equals(request.getParameter("logout"))) { %>
+      <div class="success-message">
+        <i class="fa-solid fa-circle-check"></i> You have logged out successfully.
+      </div>
+    <% } %>
+
+    <!-- Error message from authorization or invalid credentials -->
     <% if(request.getAttribute("error") != null) { %>
       <div class="error-message">
         <i class="fa-solid fa-triangle-exclamation"></i> <%= request.getAttribute("error") %>
       </div>
+    <% } else if (request.getParameter("error") != null) { %>
+      <div class="error-message">
+        <i class="fa-solid fa-triangle-exclamation"></i> <%= request.getParameter("error") %>
+      </div>
     <% } %>
 
     <form action="login" method="post">
-      <label for="email"><i class="fa-solid fa-envelope"></i> Email Address</label>
-      <input type="email" id="email" name="email" placeholder="e.g. john@example.com" required>
+      <label for="email"><i class="fa-solid fa-envelope"></i> Email ID</label>
+      <input type="email" id="email" name="email" placeholder="e.g. john@example.com" value="katikasushmitha7228@gmail.com" required>
 
       <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
-      <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      <input type="password" id="password" name="password" placeholder="Enter your password" value="Sushmitha@06" required>
 
       <button type="submit" class="login-btn">
         <i class="fa-solid fa-right-to-bracket"></i> Login
@@ -209,12 +296,13 @@
     </form>
 
     <div class="demo-box">
-      <div class="demo-title">⚡ 1-Click Demo Accounts</div>
-      <button type="button" class="demo-btn" onclick="fillDemo('john@example.com', 'password123')">👤 John (Customer)</button>
-      <button type="button" class="demo-btn" onclick="fillDemo('admin@foodzone.com', 'admin123')">👑 Admin</button>
+      <div class="demo-title">⚡ Quick-Fill Demo Credentials</div>
+      <button type="button" class="demo-btn" onclick="switchRole('customer'); fillDemo('katikasushmitha7228@gmail.com', 'Sushmitha@06')">👤 Sushmitha (Customer)</button>
+      <button type="button" class="demo-btn" onclick="switchRole('customer'); fillDemo('john@example.com', 'password123')">👤 John (Customer)</button>
+      <button type="button" class="demo-btn" onclick="switchRole('admin'); fillDemo('admin@foodzone.com', 'admin123')">👑 Admin (Operations)</button>
     </div>
 
-    <p class="register-link">Don't have an account?<a href="userregistration.jsp">Register here</a></p>
+    <p class="register-link" id="regLinkSection">Don't have a customer account?<a href="userregistration.jsp">Register here</a></p>
   </div>
 
 </body>
