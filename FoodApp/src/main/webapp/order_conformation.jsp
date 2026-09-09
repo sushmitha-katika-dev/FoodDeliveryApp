@@ -9,6 +9,8 @@
   <title>Order Confirmed & Live Tracking - FoodZone</title>
   <link type="image/png" rel="icon" href="images/food app header logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     * {
       margin: 0;
@@ -33,7 +35,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.12);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
     }
 
     .logo a {
@@ -60,34 +62,33 @@
     }
 
     .main-container {
-      max-width: 620px;
-      margin: 25px auto;
-      padding: 0 15px;
+      max-width: 680px;
+      margin: 24px auto;
+      padding: 0 16px;
     }
 
-    /* Status Card */
+    /* Live Status Tracker Card */
     .status-card {
       background: white;
       border-radius: 16px;
-      padding: 24px;
-      text-align: center;
+      padding: 24px 20px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      text-align: center;
       margin-bottom: 20px;
       border: 1px solid #eef0f2;
     }
 
     .success-icon-badge {
-      width: 60px;
-      height: 60px;
+      width: 55px;
+      height: 55px;
       background: #e8f5e9;
       color: #2e7d32;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: 26px;
       margin: 0 auto 12px;
-      box-shadow: 0 4px 10px rgba(46,125,50,0.15);
     }
 
     .status-card h1 {
@@ -96,11 +97,15 @@
       margin-bottom: 4px;
     }
 
-    .status-card .eta-text {
-      font-size: 16px;
+    .eta-text {
+      font-size: 15px;
       font-weight: 700;
       color: #ff6f61;
       margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     /* Order Tracker Progress Bar */
@@ -126,7 +131,7 @@
       position: absolute;
       top: 14px;
       left: 20px;
-      width: 40%;
+      width: 45%;
       height: 3px;
       background: #2e7d32;
       z-index: 2;
@@ -170,18 +175,93 @@
       animation: pulse 1.5s infinite;
     }
 
-    .tracker-step.completed {
-      color: #2e7d32;
-    }
-
-    .tracker-step.active {
-      color: #ff6f61;
-    }
+    .tracker-step.completed { color: #2e7d32; }
+    .tracker-step.active { color: #ff6f61; }
 
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0px rgba(255,111,97,0.4); }
       70% { box-shadow: 0 0 0 8px rgba(255,111,97,0); }
       100% { box-shadow: 0 0 0 0px rgba(255,111,97,0); }
+    }
+
+    /* Live GPS Map Card */
+    .map-card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border: 1px solid #eef0f2;
+      margin-bottom: 20px;
+    }
+
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .map-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #222;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .live-pulse-badge {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    #liveMap {
+      height: 220px;
+      width: 100%;
+      border-radius: 12px;
+      z-index: 10;
+    }
+
+    /* Cancellation Banner */
+    .cancel-box {
+      background: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .cancel-box span {
+      font-size: 13px;
+      color: #9b2c2c;
+    }
+
+    .cancel-btn {
+      background: #e53e3e;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .cancel-btn:hover {
+      background: #c53030;
     }
 
     /* Driver Partner Card */
@@ -239,7 +319,7 @@
       gap: 6px;
     }
 
-    /* Bill Receipt Card (Swiggy/Zomato style) */
+    /* Bill Receipt Card */
     .bill-receipt-card {
       background: white;
       border-radius: 16px;
@@ -259,48 +339,49 @@
     }
 
     .receipt-title {
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      font-weight: 700;
-      color: #777;
+      font-size: 18px;
+      font-weight: 800;
+      color: #222;
     }
 
     .receipt-order-id {
-      font-size: 16px;
+      font-size: 13px;
+      color: #ff6f61;
       font-weight: 700;
-      color: #222;
       margin-top: 2px;
     }
 
     .receipt-date {
-      font-size: 13px;
+      font-size: 12.5px;
       color: #888;
       text-align: right;
     }
 
     .restaurant-bill-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       padding-bottom: 12px;
       border-bottom: 1px dashed #e8e8e8;
     }
 
     .rest-title-pill {
-      font-size: 14px;
-      font-weight: 700;
-      color: #ff6f61;
-      margin-bottom: 10px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
+      background: #fff0ed;
+      color: #ff6f61;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
     }
 
     .item-bill-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 0;
       font-size: 14px;
+      margin-bottom: 8px;
     }
 
     .item-bill-left {
@@ -309,30 +390,13 @@
       gap: 8px;
     }
 
-    .veg-indicator {
-      width: 14px;
-      height: 14px;
-      border: 1.5px solid #2e7d32;
-      border-radius: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .veg-dot {
-      width: 6px;
-      height: 6px;
-      background: #2e7d32;
-      border-radius: 50%;
-    }
-
     .item-qty-badge {
+      background: #f0f2f5;
+      color: #444;
       font-size: 12px;
-      background: #f0f0f0;
+      font-weight: bold;
       padding: 2px 6px;
       border-radius: 4px;
-      font-weight: 700;
-      color: #444;
     }
 
     .item-bill-price {
@@ -341,15 +405,17 @@
     }
 
     .bill-summary-section {
-      padding-top: 10px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 2px solid #f4f6f8;
     }
 
     .summary-row {
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
-      padding: 5px 0;
-      color: #555;
+      font-size: 13.5px;
+      color: #666;
+      margin-bottom: 7px;
     }
 
     .summary-row.free-tag span:last-child {
@@ -363,12 +429,12 @@
     }
 
     .summary-row.grand-total-row {
-      border-top: 2px solid #222;
-      padding-top: 12px;
-      margin-top: 10px;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
-      color: #1a1a1a;
+      color: #111;
+      border-top: 1px solid #eef0f2;
+      padding-top: 10px;
+      margin-top: 10px;
     }
 
     .payment-status-badge {
@@ -377,93 +443,56 @@
       gap: 6px;
       background: #e8f5e9;
       color: #2e7d32;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 700;
-      margin-top: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-top: 8px;
     }
 
     .delivery-details-card {
       background: white;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
       border: 1px solid #eef0f2;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .delivery-details-card h3 {
       font-size: 15px;
       color: #222;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .delivery-info-text {
-      font-size: 14px;
-      color: #555;
-      line-height: 1.5;
-    }
-
     .actions-container {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 10px;
     }
 
     .btn-action {
-      flex: 1;
-      padding: 14px;
+      padding: 12px;
       border-radius: 12px;
+      font-size: 14px;
       font-weight: bold;
-      font-size: 14.5px;
       text-align: center;
       text-decoration: none;
+      border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: 0.2s;
-      border: none;
+      transition: all 0.2s;
     }
 
-    .btn-action.home {
-      background-color: #ff6f61;
-      color: white;
-    }
-
-    .btn-action.home:hover {
-      background-color: #e65b50;
-    }
-
-    .btn-action.orders {
-      background-color: #333;
-      color: white;
-    }
-
-    .btn-action.orders:hover {
-      background-color: #111;
-    }
-
-    .btn-action.print {
-      background-color: white;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-
-    .btn-action.print:hover {
-      background-color: #f5f5f5;
-    }
-
-    @media print {
-      body { background: white; padding: 0; }
-      .navbar, .tracker-steps, .actions-container, .driver-card, .nav-link { display: none !important; }
-      .main-container { max-width: 100%; margin: 0; padding: 0; }
-      .bill-receipt-card, .status-card, .delivery-details-card { box-shadow: none; border: 1px solid #ddd; }
-    }
+    .btn-action.print { background: #e2e8f0; color: #334155; }
+    .btn-action.orders { background: #fee2e2; color: #dc2626; }
+    .btn-action.home { background: #ff6f61; color: white; }
   </style>
 </head>
 <body>
@@ -471,33 +500,36 @@
   <nav class="navbar">
     <div class="logo"><a href="home">FoodZone 🍴</a></div>
     <div>
-      <a href="my-orders" class="nav-link"><i class="fa-solid fa-receipt"></i> My Orders</a>
+      <a href="my-orders" class="nav-link"><i class="fa-solid fa-receipt"></i> Orders</a>
       <a href="home" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
     </div>
   </nav>
 
   <%
     List<CartItem> receiptItems = (List<CartItem>)session.getAttribute("receiptItems");
-    Integer subTotalObj = (Integer)session.getAttribute("receiptSubTotal");
-    int subTotal = (subTotalObj != null) ? subTotalObj : 0;
-    Integer discountObj = (Integer)session.getAttribute("receiptDiscount");
-    int discount = (discountObj != null) ? discountObj : 0;
-    String couponCode = (String)session.getAttribute("receiptCoupon");
-    Integer grandTotalObj = (Integer)session.getAttribute("receiptGrandTotal");
-    int grandTotal = (grandTotalObj != null) ? grandTotalObj : subTotal;
+    Integer grandTotal = (Integer)session.getAttribute("receiptTotal");
+    if (grandTotal == null) grandTotal = (Integer)request.getAttribute("totalAmount");
+    if (grandTotal == null) grandTotal = 0;
 
-    String paymentMode = (String)session.getAttribute("receiptPaymentMode");
-    if (paymentMode == null) paymentMode = "Online / Card";
-    String receiptTime = (String)session.getAttribute("receiptTime");
-    if (receiptTime == null) {
-      receiptTime = new java.text.SimpleDateFormat("dd MMM yyyy, hh:mm a").format(new java.util.Date());
-    }
-    String address = (String)session.getAttribute("userAddress");
+    Integer subTotal = (Integer)session.getAttribute("receiptSubtotal");
+    if (subTotal == null) subTotal = grandTotal;
+
+    Integer discount = (Integer)session.getAttribute("receiptDiscount");
+    if (discount == null) discount = 0;
+
+    String couponCode = (String)session.getAttribute("receiptCoupon");
+    String paymentMode = (String)session.getAttribute("receiptPayment");
+    if (paymentMode == null) paymentMode = "Online Payment";
+
+    String address = (String)session.getAttribute("receiptAddress");
     if (address == null) address = "Flat 402, Sunshine Heights, MG Road, Bangalore";
-    
+
+    String receiptTime = (String)session.getAttribute("receiptTime");
+    if (receiptTime == null) receiptTime = "Just now";
+
     User loggedInUser = (User)session.getAttribute("user");
     String userName = (loggedInUser != null) ? loggedInUser.getName() : "Customer";
-    String userPhone = (loggedInUser != null) ? loggedInUser.getPhonenumber() : "9876543210";
+    String userPhone = (loggedInUser != null && loggedInUser.getPhonenumber() != null) ? loggedInUser.getPhonenumber() : "+91 9876543210";
 
     List<Order> placedOrders = (List<Order>)session.getAttribute("placedOrders");
     RestaurantDAO rdao = new RestaurantDAOImpl();
@@ -542,7 +574,31 @@
       </div>
     </div>
 
-    <!-- 2. Delivery Executive Card -->
+    <!-- 1.5 Interactive GPS Live Map Tracking -->
+    <div class="map-card">
+      <div class="map-header">
+        <div class="map-title"><i class="fa-solid fa-map-location-dot" style="color:#ff6f61;"></i> Live Delivery Route</div>
+        <span class="live-pulse-badge"><i class="fa-solid fa-circle" style="font-size:8px; animation: pulse 1s infinite;"></i> GPS Live</span>
+      </div>
+      <div id="liveMap"></div>
+    </div>
+
+    <!-- 1.8 60-Second Grace Cancellation Box -->
+    <% if (placedOrders != null && !placedOrders.isEmpty()) { 
+         Order firstOrder = placedOrders.get(0);
+    %>
+      <div class="cancel-box" id="cancelGraceBox">
+        <span>⏱️ Made a mistake? Cancel within <strong id="graceTimer">58s</strong> for an instant refund.</span>
+        <form action="cancel-order" method="POST" style="margin:0;">
+          <input type="hidden" name="orderId" value="<%= firstOrder.getOrderid() %>">
+          <button type="submit" class="cancel-btn" onclick="return confirm('Are you sure you want to cancel this order? Your refund will be processed immediately.')">
+            <i class="fa-solid fa-xmark"></i> Cancel Order
+          </button>
+        </form>
+      </div>
+    <% } %>
+
+    <!-- 2. Delivery Partner Card -->
     <div class="driver-card">
       <div class="driver-left">
         <div class="driver-avatar"><i class="fa-solid fa-motorcycle"></i></div>
@@ -554,7 +610,7 @@
       <a href="tel:9876543210" class="call-driver-btn"><i class="fa-solid fa-phone"></i> Call</a>
     </div>
 
-    <!-- 3. Detailed Swiggy/Zomato Style Bill Receipt -->
+    <!-- 3. Detailed Swiggy/Zomato Bill Receipt -->
     <div class="bill-receipt-card">
       <div class="receipt-header">
         <div>
@@ -595,7 +651,6 @@
           <% for (CartItem itm : rItems) { %>
             <div class="item-bill-row">
               <div class="item-bill-left">
-                <div class="veg-indicator"><div class="veg-dot"></div></div>
                 <span class="item-qty-badge"><%= itm.getQuantity() %>x</span>
                 <span><%= itm.getName() %></span>
               </div>
@@ -646,7 +701,7 @@
 
     <!-- 4. Delivery Details Card -->
     <div class="delivery-details-card">
-      <h3><i class="fa-solid fa-location-dot" style="color: #ff6f61;"></i> Delivery Details</h3>
+      <h3><i class="fa-solid fa-location-dot" style="color: #ff6f61;"></i> Delivery Destination</h3>
       <div class="delivery-info-text">
         <div><strong><%= userName %></strong> &bull; <%= userPhone %></div>
         <div style="color: #666; margin-top: 4px;"><%= address %></div>
@@ -687,6 +742,50 @@
   </div>
 
   <script>
+    // 1. Leaflet GPS Route Simulation
+    document.addEventListener("DOMContentLoaded", function() {
+      if (document.getElementById('liveMap')) {
+        const kitchenPos = [12.9716, 77.5946]; // Bangalore center
+        const customerPos = [12.9850, 77.6400]; // Delivery address
+
+        const map = L.map('liveMap', { zoomControl: false }).setView([12.978, 77.617], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        // Markers
+        const restMarker = L.marker(kitchenPos).addTo(map).bindPopup('<b>Kitchen Partner</b><br>Order is cooking').openPopup();
+        const homeMarker = L.marker(customerPos).addTo(map).bindPopup('<b>Delivery Address</b><br>Your location');
+
+        // Route Polyline
+        const routePoints = [
+          kitchenPos,
+          [12.9750, 77.6050],
+          [12.9800, 77.6200],
+          [12.9820, 77.6320],
+          customerPos
+        ];
+        L.polyline(routePoints, { color: '#ff6f61', weight: 4, opacity: 0.8, dashArray: '8, 8' }).addTo(map);
+
+        // Moving Bike Marker
+        let step = 0;
+        const bikeIcon = L.divIcon({
+          html: '<div style="background:#ff6f61; color:white; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px rgba(255,111,97,0.8);"><i class="fa-solid fa-motorcycle"></i></div>',
+          className: 'bike-icon',
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        });
+        const bikeMarker = L.marker(routePoints[0], { icon: bikeIcon }).addTo(map);
+
+        setInterval(() => {
+          step = (step + 1) % routePoints.length;
+          bikeMarker.setLatLng(routePoints[step]);
+        }, 3000);
+      }
+    });
+
+    // 2. Star Rating Handler
     function submitRating(stars) {
       const allStars = document.querySelectorAll('.rating-star');
       allStars.forEach((star, idx) => {
@@ -699,6 +798,22 @@
       const feedback = document.getElementById('ratingFeedback');
       feedback.style.display = 'block';
       feedback.innerHTML = '🎉 Thank you! Your ' + stars + '★ review has been shared with the restaurant.';
+    }
+
+    // 3. Grace Cancellation Timer
+    let graceSeconds = 60;
+    const graceTimerElem = document.getElementById('graceTimer');
+    const graceBox = document.getElementById('cancelGraceBox');
+    if (graceTimerElem && graceBox) {
+      const countdown = setInterval(() => {
+        graceSeconds--;
+        if (graceSeconds > 0) {
+          graceTimerElem.textContent = graceSeconds + 's';
+        } else {
+          clearInterval(countdown);
+          graceBox.style.display = 'none';
+        }
+      }, 1000);
     }
   </script>
 </body>

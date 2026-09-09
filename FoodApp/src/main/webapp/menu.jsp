@@ -88,6 +88,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .back-link {
@@ -98,98 +100,161 @@
       text-decoration: none;
       font-weight: bold;
       font-size: 15px;
-      background: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      border: 1px solid #ffd1cb;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      transition: 0.2s;
     }
 
     .back-link:hover {
-      background-color: #ffefe8;
-      transform: translateX(-3px);
+      text-decoration: underline;
     }
 
-    /* Toast Acknowledgement Notification */
+    /* Veg/Non-Veg Filter Controls */
+    .filter-controls {
+      display: flex;
+      gap: 8px;
+      background: white;
+      padding: 4px;
+      border-radius: 24px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .filter-pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: #666;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-pill.active {
+      background: #ff6f61;
+      color: white;
+    }
+
+    .filter-pill.active.veg {
+      background: #2e7d32;
+      color: white;
+    }
+
+    .filter-pill.active.nonveg {
+      background: #c62828;
+      color: white;
+    }
+
+    .veg-dot {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #2e7d32;
+      padding: 2px;
+      border-radius: 3px;
+      position: relative;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .veg-dot::after {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      background: #2e7d32;
+      border-radius: 50%;
+    }
+
+    .nonveg-dot {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #c62828;
+      padding: 2px;
+      border-radius: 3px;
+      position: relative;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .nonveg-dot::after {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      background: #c62828;
+      border-radius: 50%;
+    }
+
     .toast-container {
       max-width: 1200px;
-      margin: 15px auto 0;
+      margin: 12px auto 0;
       padding: 0 2rem;
     }
 
     .toast-alert {
       background-color: #e8f5e9;
-      border: 1px solid #a5d6a7;
-      color: #1b5e20;
-      padding: 14px 20px;
+      border: 1px solid #c8e6c9;
+      color: #2e7d32;
+      padding: 12px 18px;
       border-radius: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      animation: slideDown 0.3s ease-out;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
-    @keyframes slideDown {
-      from { transform: translateY(-10px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .toast-alert .toast-actions {
+    .toast-actions {
       display: flex;
       gap: 10px;
-      align-items: center;
     }
 
     .toast-btn {
       background-color: #2e7d32;
       color: white;
-      text-decoration: none;
       padding: 6px 14px;
       border-radius: 16px;
+      text-decoration: none;
       font-weight: bold;
       font-size: 13px;
-      transition: 0.2s;
     }
 
-    .toast-btn:hover {
-      background-color: #1b5e20;
-    }
-	
     .menu-container {
       padding: 1.5rem 2rem;
-      max-width: 1200px;
-      margin: auto;
+      max-width: 1250px;
+      margin: 0 auto;
     }
 
     .menu-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      justify-content: flex-start;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
     }
 
     .menu-card {
       background-color: white;
-      width: 270px;
       border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
     }
 
     .menu-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-4px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
     .menu-card img {
       width: 100%;
-      height: 170px;
+      height: 180px;
       object-fit: cover;
     }
 
@@ -204,6 +269,8 @@
       font-size: 1.15rem;
       margin-bottom: 0.4rem;
       color: #222;
+      display: flex;
+      align-items: center;
     }
 
     .menu-card p.description {
@@ -349,7 +416,8 @@
     <div class="nav-buttons">
       <a class="nav-btn" href="home"><i class="fa-solid fa-house"></i> All Restaurants</a>
       <% if(loggedInUser != null) { %>
-        <span style="display: flex; align-items: center; color: white; font-weight: bold; margin-right: 4px;"><i class="fa-solid fa-circle-user" style="margin-right: 6px;"></i> <%= loggedInUser.getName().split(" ")[0] %></span>
+        <a class="nav-btn" href="profile"><i class="fa-solid fa-circle-user"></i> <%= loggedInUser.getName().split(" ")[0] %></a>
+        <a class="nav-btn" href="logout" style="background:#fee2e2; border-color:#fca5a5; color:#dc2626;" title="Sign Out"><i class="fa-solid fa-power-off"></i></a>
       <% } else { %>
         <a class="nav-btn" href="login.jsp">Sign In <i class="fa-solid fa-right-to-bracket"></i></a>
       <% } %>
@@ -364,9 +432,13 @@
 
   <div class="top-bar-action">
     <a href="home" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to All Restaurants</a>
-    <% if(cartCount > 0) { %>
-      <span style="font-size: 14px; color: #666;"><i class="fa-solid fa-circle-info" style="color:#ff6f61;"></i> Items from multiple restaurants will stay saved in your cart!</span>
-    <% } %>
+    
+    <!-- Pure Veg / Non-Veg Toggle Filter -->
+    <div class="filter-controls">
+      <button type="button" class="filter-pill active" onclick="filterVeg('all', this)">🍽️ All Items</button>
+      <button type="button" class="filter-pill veg" onclick="filterVeg('veg', this)"><span class="veg-dot"></span> Pure Veg</button>
+      <button type="button" class="filter-pill nonveg" onclick="filterVeg('nonveg', this)"><span class="nonveg-dot"></span> Non-Veg</button>
+    </div>
   </div>
 
   <!-- Acknowledgement Toast when an item is added -->
@@ -386,7 +458,7 @@
   <% } %>
 
   <div class="menu-container">
-    <div class="menu-grid">
+    <div class="menu-grid" id="menuGrid">
       
       <!-- Menu Cards -->
       <%
@@ -400,15 +472,21 @@
           if (cart != null && cart.getItems().containsKey(menu.getMenuid())) {
             inCartQty = cart.getItems().get(menu.getMenuid()).getQuantity();
           }
+          
+          String lowerName = (menu.getItemname() + " " + menu.getDescription()).toLowerCase();
+          boolean isNonVeg = lowerName.contains("chicken") || lowerName.contains("mutton") || lowerName.contains("egg") || lowerName.contains("fish") || lowerName.contains("pepperoni") || lowerName.contains("prawn") || lowerName.contains("meat") || lowerName.contains("pork") || lowerName.contains("beef") || lowerName.contains("bbq");
         %>
         
-        <div class="menu-card">
+        <div class="menu-card" data-is-veg="<%= !isNonVeg %>">
           <% if(inCartQty > 0) { %>
             <div class="in-cart-pill"><i class="fa-solid fa-check"></i> <%= inCartQty %> in cart</div>
           <% } %>
           <img src="<%= menu.getImagepath() %>" alt="menu item" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80'">
           <div class="menu-card-content">
-            <h3><%= menu.getItemname() %></h3>
+            <h3>
+              <span class="<%= isNonVeg ? "nonveg-dot" : "veg-dot" %>" title="<%= isNonVeg ? "Non-Vegetarian" : "Pure Vegetarian" %>"></span>
+              <%= menu.getItemname() %>
+            </h3>
             <div class="price-rating">
               <span class="price">₹ <%= menu.getPrice() %></span>
               <span class="rating">⭐ <%= menu.getRatings() %></span>
@@ -455,5 +533,23 @@
     </div>
   <% } %>
 
+  <script>
+    function filterVeg(type, btn) {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('.menu-card');
+      cards.forEach(card => {
+        const isVeg = card.getAttribute('data-is-veg') === 'true';
+        if (type === 'all') {
+          card.style.display = 'flex';
+        } else if (type === 'veg') {
+          card.style.display = isVeg ? 'flex' : 'none';
+        } else if (type === 'nonveg') {
+          card.style.display = !isVeg ? 'flex' : 'none';
+        }
+      });
+    }
+  </script>
 </body>
 </html>
