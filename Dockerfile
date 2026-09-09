@@ -11,5 +11,9 @@ FROM tomcat:10.1-jdk17-temurin
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY --from=build /app/FoodApp/target/FoodApp.war /usr/local/tomcat/webapps/ROOT.war
 
+# Configure Tomcat for Cloud Port Binding (Render / Railway / Cloud)
+# Disable shutdown port to prevent probe conflicts
+RUN sed -i 's/port="8005"/port="-1"/' /usr/local/tomcat/conf/server.xml
+
 EXPOSE 8080
-CMD ["catalina.sh", "run"]
+CMD ["sh", "-c", "sed -i \"s/port=\\\"8080\\\"/port=\\\"${PORT:-8080}\\\"/g\" /usr/local/tomcat/conf/server.xml && catalina.sh run"]
