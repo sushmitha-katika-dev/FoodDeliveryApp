@@ -187,9 +187,10 @@
       gap: 6px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.04);
       transition: all 0.2s ease;
+      cursor: pointer;
     }
 
-    .category-chip:hover {
+    .category-chip:hover, .category-chip.active {
       border-color: #ff6f61;
       color: #ff6f61;
       background: #fff8f6;
@@ -211,6 +212,15 @@
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .live-count-badge {
+      font-size: 13px;
+      background: #eef2f6;
+      color: #475569;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 600;
     }
 
     .card-grid {
@@ -291,8 +301,8 @@
   <nav class="navbar">
     <div class="logo"><a href="home">FoodZone 🍴</a></div>
     <div class="search-container">
-      <form action="SearchServlet" method="POST">
-        <input type="text" name="searchQuery" placeholder="Search biryani, pizza, burger, noodles..." class="search-bar">
+      <form action="SearchServlet" method="POST" id="searchForm">
+        <input type="text" id="liveSearchInput" name="searchQuery" placeholder="Search biryani, pizza, burger, noodles..." class="search-bar" autocomplete="off">
         <button type="submit" class="search-button">
           <i class="fa-solid fa-magnifying-glass" style="color: #ff6f61;"></i>
         </button>
@@ -300,8 +310,11 @@
     </div>  
     <div class="nav-buttons">
       <% if(loggedInUser != null) { %>
-        <a class="nav-btn" href="my-orders"><i class="fa-solid fa-receipt"></i> My Orders</a>
-        <span style="display: flex; align-items: center; color: white; font-weight: bold; margin: 0 4px;"><i class="fa-solid fa-circle-user" style="margin-right: 5px;"></i> <%= loggedInUser.getName().split(" ")[0] %></span>
+        <a class="nav-btn" href="my-orders"><i class="fa-solid fa-receipt"></i> Orders</a>
+        <a class="nav-btn" href="profile"><i class="fa-solid fa-circle-user"></i> <%= loggedInUser.getName().split(" ")[0] %></a>
+        <% if("Admin".equalsIgnoreCase(loggedInUser.getRole())) { %>
+          <a class="nav-btn" href="admin-dashboard" style="background:#4338ca; border-color:#4338ca; color:white;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+        <% } %>
       <% } else { %>
         <a class="nav-btn" href="login.jsp">Sign In <i class="fa-solid fa-right-to-bracket"></i></a>
       <% } %>
@@ -327,28 +340,29 @@
     <div class="categories-section">
       <div class="section-subtitle">What are you craving?</div>
       <div class="category-chips">
-        <a href="SearchServlet?searchQuery=Biryani" class="category-chip">🍗 Biryani</a>
-        <a href="SearchServlet?searchQuery=Pizza" class="category-chip">🍕 Pizza</a>
-        <a href="SearchServlet?searchQuery=Burger" class="category-chip">🍔 Burgers</a>
-        <a href="SearchServlet?searchQuery=Chinese" class="category-chip">🥟 Chinese</a>
-        <a href="SearchServlet?searchQuery=South Indian" class="category-chip">☕ South Indian</a>
-        <a href="SearchServlet?searchQuery=North Indian" class="category-chip">🍛 North Indian</a>
-        <a href="SearchServlet?searchQuery=Dessert" class="category-chip">🍰 Cakes & Desserts</a>
-        <a href="SearchServlet?searchQuery=Healthy" class="category-chip">🥗 Healthy Bowls</a>
+        <button type="button" class="category-chip active" onclick="filterByCuisine('all', this)">🍽️ All Outlets</button>
+        <button type="button" class="category-chip" onclick="filterByCuisine('Biryani', this)">🍗 Biryani</button>
+        <button type="button" class="category-chip" onclick="filterByCuisine('Pizza', this)">🍕 Pizza</button>
+        <button type="button" class="category-chip" onclick="filterByCuisine('Burger', this)">🍔 Burgers</button>
+        <button type="button" class="category-chip" onclick="filterByCuisine('Chinese', this)">🥟 Chinese</button>
+        <button type="button" class="category-chip" onclick="filterByCuisine('South Indian', this)">☕ South Indian</button>
+        <button type="button" class="category-chip" onclick="filterByCuisine('North Indian', this)">🍛 North Indian</button>
+        <button type="button" class="category-chip" onclick="filterByCuisine('Dessert', this)">🍰 Cakes & Desserts</button>
       </div>
     </div>
 
     <div class="filter-bar">
       <h2 class="section-title"><i class="fa-solid fa-utensils" style="color: #ff6f61;"></i> Top Restaurants for You</h2>
+      <span id="matchCountBadge" class="live-count-badge">Showing all restaurants</span>
     </div>
 
-    <div class="card-grid">
+    <div class="card-grid" id="restaurantGrid">
 		<% 
 		List<Restaurant> allRestaurants = (List<Restaurant>)request.getAttribute("allRestaurants");
 		
 	    if(allRestaurants == null || allRestaurants.isEmpty())
 	    { %>
-	            <div style="width:100%; text-align:center; padding:60px 20px; color:#666;">
+	            <div style="width:100%; text-align:center; padding:60px 20px; color:#666;" id="noRestaurantsMsg">
 	                <h3>No restaurants found</h3>
 	                <p style="margin-top: 8px;">Try searching for another cuisine or restaurant name</p>
 	                <a href="home" style="display:inline-block; margin-top:15px; color:#ff6f61; font-weight:bold;">View All Restaurants</a>
@@ -358,7 +372,11 @@
 	    { 
 			for(Restaurant restaurant: allRestaurants)
 			{ %>
-				<a href="menu?restaurantId=<%= restaurant.getRestaurantid() %>">
+				<a href="menu?restaurantId=<%= restaurant.getRestaurantid() %>" 
+                   class="restaurant-card-link" 
+                   data-name="<%= restaurant.getName().toLowerCase() %>" 
+                   data-cuisine="<%= restaurant.getCusinetype().toLowerCase() %>"
+                   data-address="<%= restaurant.getAddress().toLowerCase() %>">
 					<div class="card">
 						<img src="<%= restaurant.getImagepath() %>" alt="restaurant image" onerror="this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80'">
 						<div class="card-content">
@@ -373,5 +391,55 @@
 		} %>     
     </div>
   </div>
+
+  <script>
+    // Live client-side instant filtering
+    const searchInput = document.getElementById('liveSearchInput');
+    const cards = document.querySelectorAll('.restaurant-card-link');
+    const matchBadge = document.getElementById('matchCountBadge');
+
+    function applyFilter(query) {
+      const q = query.toLowerCase().trim();
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        const cuisine = card.getAttribute('data-cuisine') || '';
+        const address = card.getAttribute('data-address') || '';
+
+        if (!q || name.includes(q) || cuisine.includes(q) || address.includes(q)) {
+          card.style.display = 'inline-block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (q) {
+        matchBadge.textContent = visibleCount + " matching outlet" + (visibleCount !== 1 ? "s" : "");
+      } else {
+        matchBadge.textContent = "Showing all " + cards.length + " restaurants";
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        applyFilter(e.target.value);
+      });
+    }
+
+    function filterByCuisine(cuisine, chipElement) {
+      document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+      if (chipElement) chipElement.classList.add('active');
+
+      if (cuisine === 'all') {
+        if (searchInput) searchInput.value = '';
+        applyFilter('');
+      } else {
+        if (searchInput) searchInput.value = cuisine;
+        applyFilter(cuisine);
+      }
+    }
+  </script>
 </body>
 </html>

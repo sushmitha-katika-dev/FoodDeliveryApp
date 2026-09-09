@@ -653,6 +653,24 @@
       </div>
     </div>
 
+    <!-- 4.5. Interactive Experience Rating Card -->
+    <div class="delivery-details-card" id="ratingCard" style="text-align: center; padding: 22px;">
+      <h3 style="justify-content: center; margin-bottom: 8px;"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Rate Your Food & Delivery</h3>
+      <p style="font-size: 13.5px; color: #666; margin-bottom: 12px;">How was your experience with FoodZone today?</p>
+      
+      <div id="starContainer" style="font-size: 28px; color: #e2e8f0; cursor: pointer; display: flex; justify-content: center; gap: 8px; margin-bottom: 14px;">
+        <i class="fa-solid fa-star rating-star" data-val="1" onclick="submitRating(1)"></i>
+        <i class="fa-solid fa-star rating-star" data-val="2" onclick="submitRating(2)"></i>
+        <i class="fa-solid fa-star rating-star" data-val="3" onclick="submitRating(3)"></i>
+        <i class="fa-solid fa-star rating-star" data-val="4" onclick="submitRating(4)"></i>
+        <i class="fa-solid fa-star rating-star" data-val="5" onclick="submitRating(5)"></i>
+      </div>
+
+      <div id="ratingFeedback" style="display: none; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 600;">
+        🎉 Thank you! Your 5★ rating has been submitted to the kitchen partner.
+      </div>
+    </div>
+
     <!-- 5. Action Buttons -->
     <div class="actions-container">
       <button class="btn-action print" onclick="window.print()">
@@ -668,5 +686,20 @@
 
   </div>
 
+  <script>
+    function submitRating(stars) {
+      const allStars = document.querySelectorAll('.rating-star');
+      allStars.forEach((star, idx) => {
+        if (idx < stars) {
+          star.style.color = '#f59e0b';
+        } else {
+          star.style.color = '#e2e8f0';
+        }
+      });
+      const feedback = document.getElementById('ratingFeedback');
+      feedback.style.display = 'block';
+      feedback.innerHTML = '🎉 Thank you! Your ' + stars + '★ review has been shared with the restaurant.';
+    }
+  </script>
 </body>
 </html>

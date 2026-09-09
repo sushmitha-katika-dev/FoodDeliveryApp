@@ -4,33 +4,34 @@
 [![Jakarta EE](https://img.shields.io/badge/Jakarta%20EE-10.0-blue.svg?logo=jakartaee&logoColor=white)](https://jakarta.ee/)
 [![Apache Tomcat](https://img.shields.io/badge/Apache%20Tomcat-10.1-yellow.svg?logo=apachetomcat&logoColor=white)](https://tomcat.apache.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
 [![Maven](https://img.shields.io/badge/Build-Maven%203.9-red.svg?logo=apachemaven&logoColor=white)](https://maven.apache.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> A modern, full-featured Java Enterprise web application inspired by **Swiggy & Zomato**, enabling users to explore restaurants across multiple cuisines, manage unified multi-restaurant carts, apply promo discount coupons, track live order status with digital invoice receipts, and reorder past meals with 1 click.
+> A modern, enterprise-grade Java web application inspired by **Swiggy & Zomato**, enabling users to explore restaurants across multiple cuisines, manage unified multi-restaurant carts, apply promo discount coupons, track live order status with digital invoice receipts, reorder past meals with 1 click, manage customer profiles, and monitor platform operations via an interactive Merchant & Admin Portal.
 
 ---
 
 ## 🌟 Key Features
 
-### 🍽️ 1. Multi-Cuisine Restaurant Discovery
-- Browse top-rated restaurants with cuisine types, ratings, and delivery ETA.
+### 🍽️ 1. Multi-Cuisine Restaurant Discovery & Instant Live Search
+- **Instant Client-Side Search**: Zero-lag real-time filtering as you type restaurant names, dishes, or areas with live match counter badges.
 - **Quick Category Chips**: 1-click filtering for 🍗 *Biryani*, 🍕 *Pizza*, 🍔 *Burgers*, 🥟 *Chinese*, ☕ *South Indian*, 🍛 *North Indian*, 🍰 *Desserts*, and 🥗 *Healthy Bowls*.
-- Real-time search across restaurant names, addresses, and dishes.
 
 ### 🛒 2. Unified Multi-Restaurant Shopping Cart
 - Order food items from **multiple restaurants in a single cart session** without losing previously selected dishes.
-- Real-time quantity adjustments (`+` / `−`), dynamic grand total calculation, and instant acknowledgement banners.
-- Sticky floating bottom cart bar across menu pages.
+- Real-time quantity adjustments (`+` / `−`), dynamic grand total calculation, and multi-outlet checkout support.
+- Floating bottom cart bar on restaurant menu pages.
 
 ### 🧾 3. Swiggy / Zomato Style Digital Billing & Live Tracking
-- **Live Fulfillment Stepper**: Visual progress tracker (`Confirmed` ➔ `Cooking` ➔ `On the Way` ➔ `Delivered`).
-- **Itemized Invoice Receipt**: Grouped by restaurant with veg/non-veg indicators, item quantity badges, and price breakdown.
+- **Live Fulfillment Stepper**: Real-time visual progress tracker (`Confirmed` ➔ `Cooking & In Prep` ➔ `Out for Delivery` ➔ `Delivered`).
+- **Itemized Invoice Receipt**: Grouped by restaurant with veg/non-veg indicators, item quantity badges, and subtotal breakdown.
 - **Detailed Bill Summary**: Item subtotal, delivery fee (discounted to **FREE**), platform fee, 5% restaurant GST, applied coupon savings, and payment status badges (`PAID ONLINE (UPI / Card)`).
 - **Print Receipt**: One-click printable receipt formatted for clean invoicing.
+- **⭐ 5-Star Interactive Rating Widget**: Instant customer review submission with animated feedback.
 
 ### 🏷️ 4. Promo Codes & Discount Engine
-- Apply discount coupon codes at Cart / Checkout with instant feedback:
+- Apply discount coupon codes at Cart / Checkout with live calculations:
   | Coupon Code | Discount Offer | Minimum Order |
   | :--- | :--- | :--- |
   | **`WELCOME50`** | **50% OFF** (up to ₹100) | No minimum |
@@ -38,15 +39,21 @@
   | **`FEAST100`** | **Flat ₹100 OFF** | ₹400 |
   | **`FREEDEL`** | **Free Delivery** | No minimum |
 
-### 📜 5. "My Orders" History & 1-Click Reorder
+### 👤 5. User Profile & Saved Address Management
+- Dedicated `/profile` page for customers to view account info, update phone numbers, save default delivery addresses for 1-click checkout, and update security passwords.
+
+### 🏪 6. Operations & Merchant Admin Dashboard
+- Dedicated `/admin-dashboard` portal with:
+  - **Platform KPIs**: Total Gross Revenue (₹), Total Orders Received, Active Kitchen Partners, Registered Customers.
+  - **Live Customer Orders Table**: View real-time orders with customer names, amounts, payment modes, and update order status (*Confirmed*, *In Prep*, *Out for Delivery*, *Delivered*, *Cancelled*).
+  - **Partner Kitchens Overview**: List of registered restaurants, menus, and ratings.
+
+### 📜 7. "My Orders" History & 1-Click Reorder
 - Dedicated order history dashboard displaying past orders with timestamps, restaurant details, dishes, and delivery status.
 - **1-Click "Reorder All"**: Instantly re-adds all dishes from any past order into the active shopping cart.
 
-### 🛵 6. Delivery Partner Profile & Contact
-- Displays assigned delivery executive details (*e.g., Ramesh Kumar ⭐ 4.9 &bull; KA-01-EF-2490*) on the confirmation dashboard with direct contact actions.
-
-### 🔐 7. User Authentication & Security
-- User registration, login authentication, session management, and account lockout protection after repeated invalid attempts.
+### 🔐 8. Authentication & 1-Click Demo Logins
+- User registration, login authentication, remaining attempt warnings, and 1-click quick-fill test credentials.
 
 ---
 
@@ -58,6 +65,7 @@
 | **Frontend** | JSP, HTML5, Vanilla CSS3, JavaScript, FontAwesome 6 Icons |
 | **Database** | MySQL 8.0 (Relational schema with foreign keys and cascading deletes) |
 | **Server / Runtime** | Apache Tomcat 10.1 (Embedded Tomcat runner + Standalone WAR support) |
+| **DevOps / Containers** | Docker, Docker Compose (Multi-stage build) |
 | **Build & Tooling** | Apache Maven 3.9, Git |
 
 ---
@@ -68,6 +76,8 @@
 FoodDeliveryApp/
 ├── .gitignore
 ├── pom.xml                               # Root Maven Aggregator POM
+├── Dockerfile                            # Multi-stage Docker Build for Tomcat 10.1
+├── docker-compose.yml                    # 1-Click App + MySQL Orchestration
 ├── README.md
 └── FoodApp/
     ├── pom.xml                           # Submodule POM (Jakarta EE 10, Tomcat Embed, MySQL)
@@ -97,163 +107,109 @@ FoodDeliveryApp/
         │   │   ├── Order.java
         │   │   └── OrderItem.java
         │   ├── Servlets/                 # Web Controllers
-        │   │   ├── HomeServlet.java
-        │   │   ├── MenuServlet.java
-        │   │   ├── CartServlet.java
-        │   │   ├── CheckoutServlet.java
-        │   │   ├── ApplyCouponServlet.java
-        │   │   ├── OrderHistoryServlet.java
-        │   │   ├── ReorderServlet.java
-        │   │   ├── SearchServlet.java
-        │   │   ├── LoginServlet.java
-        │   │   └── UserRegisterServlet.java
+        │   │   ├── HomeServlet.java      # GET /home
+        │   │   ├── SearchServlet.java    # POST /SearchServlet
+        │   │   ├── MenuServlet.java      # GET /menu
+        │   │   ├── CartServlet.java      # POST /cart
+        │   │   ├── ApplyCouponServlet.java # POST /apply-coupon
+        │   │   ├── CheckoutServlet.java  # POST /checkout
+        │   │   ├── OrderHistoryServlet.java # GET /my-orders
+        │   │   ├── ReorderServlet.java   # POST /reorder
+        │   │   ├── ProfileServlet.java   # GET/POST /profile
+        │   │   ├── AdminDashboardServlet.java # GET/POST /admin-dashboard
+        │   │   ├── LoginServlet.java     # POST /login
+        │   │   ├── LogoutServlet.java    # GET /logout
+        │   │   └── UserRegisterServlet.java # POST /user-resgistration
         │   └── util/
-        │       └── DBConnection.java     # JDBC Connection Manager
-        └── webapp/                       # JSP Views & Web Descriptor
-            ├── index.jsp
-            ├── home.jsp
-            ├── menu.jsp
-            ├── cart.jsp
-            ├── checkout.jsp
-            ├── my_orders.jsp
-            ├── order_conformation.jsp
-            ├── login.jsp
-            ├── userregistration.jsp
-            └── WEB-INF/
-                └── web.xml
+        │       └── DBConnection.java     # JDBC Connection Pool Manager
+        └── webapp/                       # Web Views & UI
+            ├── WEB-INF/
+            │   └── web.xml               # Servlet & Welcome File Configurations
+            ├── index.jsp                 # Landing redirection
+            ├── login.jsp                 # Authentication & 1-click test credentials
+            ├── userregistration.jsp      # Customer Registration Page
+            ├── home.jsp                  # Restaurant discovery, live search & chips
+            ├── menu.jsp                  # Restaurant menu with multi-cart & modal
+            ├── cart.jsp                  # Shopping cart, promo coupons & total
+            ├── checkout.jsp              # Address selection & payment gateway simulation
+            ├── order_conformation.jsp    # Swiggy/Zomato live bill invoice & tracker
+            ├── my_orders.jsp             # Past order history & 1-click reorder
+            ├── profile.jsp               # User account & delivery address manager
+            └── admin_dashboard.jsp       # Live operations, KPIs & order fulfillment
 ```
 
 ---
 
-## 🗄️ Database Schema Design
+## 🚀 Quick Start Guide
 
-The application uses a normalized relational MySQL schema with foreign key constraints:
-
-```mermaid
-erDiagram
-    USER ||--o{ ORDER : places
-    RESTAURANT ||--o{ MENU : offers
-    RESTAURANT ||--o{ ORDER : receives
-    ORDER ||--|{ ORDER_ITEM : contains
-    MENU ||--o{ ORDER_ITEM : referenced_in
-
-    USER {
-        int userid PK
-        string name
-        string email
-        string password
-        string phonenumber
-        string address
-        string role
-    }
-
-    RESTAURANT {
-        int restaurantid PK
-        string name
-        string address
-        string phonenumber
-        string cusinetype
-        string deliverytime
-        string rating
-        string imagepath
-    }
-
-    MENU {
-        int menuid PK
-        int restaurantid FK
-        string itemname
-        string description
-        int price
-        float ratings
-        string imagepath
-    }
-
-    ORDER {
-        int orderid PK
-        int restaurantid FK
-        int userid FK
-        timestamp orderdate
-        int totalamount
-        string status
-        string paymentmode
-    }
-
-    ORDER_ITEM {
-        int orderitemid PK
-        int orderid FK
-        int menuid FK
-        int quantity
-        int totalamount
-    }
-```
-
----
-
-## 🚀 Getting Started
-
-### 1. Prerequisites
-- **Java Development Kit (JDK 17+)**
+### Prerequisites
+- **Java JDK 17** or higher
 - **Apache Maven 3.8+**
-- **MySQL Server 8.0+**
+- **MySQL Server 8.0+** (or Docker)
 
 ---
 
-### 2. Database Setup
-1. Open your MySQL client or terminal:
-   ```sql
-   CREATE DATABASE food;
-   ```
-2. Import the schema and sample dataset located in `FoodApp/database/food_delivery.sql`:
-   ```bash
-   mysql -u root -p food < FoodApp/database/food_delivery.sql
-   ```
-3. Update MySQL credentials in `FoodApp/src/main/java/com/foodapp/util/DBConnection.java` if needed (defaults to `root` / `root` on `localhost:3306`).
+### Method 1: Local Development (Embedded Tomcat)
 
----
+#### 1. Database Setup
+Log into your MySQL CLI or Workbench and run the initial setup script:
+```sql
+CREATE DATABASE IF NOT EXISTS food;
+USE food;
+SOURCE FoodApp/database/food_delivery.sql;
+```
 
-### 3. Build & Run the Application
+> Ensure your MySQL user credentials in [`DBConnection.java`](file:///c:/Users/katik/FoodDeliveryApp-main/FoodApp/src/main/java/com/foodapp/util/DBConnection.java) match your local instance (default: `root` / `root`).
 
-#### Option A: Run directly with Maven & Embedded Tomcat (Recommended)
-```bash
-# Navigate to the FoodApp directory
+#### 2. Build & Run
+Run the embedded Tomcat server directly via Maven:
+```powershell
 cd FoodApp
-
-# Compile and start the server
+mvn clean compile
 mvn exec:java
 ```
-The application will start immediately and be accessible at:
+
+The application will be accessible at:
 👉 **`http://localhost:8080`**
 
-#### Option B: Build WAR Package for Standalone Tomcat
+---
+
+### Method 2: Docker & Docker Compose (1-Click)
+
+Run both MySQL and FoodZone in isolated containers:
 ```bash
-cd FoodApp
-mvn clean package
+docker-compose up --build
 ```
-Deploy the generated `FoodApp/target/FoodApp.war` file to your Tomcat `webapps/` folder.
 
 ---
 
-## 🔑 Pre-Configured Test Credentials
+## 🔑 Available Test Credentials
 
-| Role | Email | Password | Pre-configured Details |
+| Account | Email | Password | Role |
 | :--- | :--- | :--- | :--- |
-| **Customer** | `john@example.com` | `password123` | Active customer with delivery address and order history |
-| **Super Admin** | `admin@foodzone.com` | `admin123` | System Administrator |
-| **Customer 2** | `jane@example.com` | `jane@123` | Verified customer |
+| **Sushmitha** | `katikasushmitha7228@gmail.com` | `Sushmitha@06` | Customer |
+| **Kavya** | `katika@gmail.com` | `Kavya@06` | Customer |
+| **John (Demo)** | `john@example.com` | `password123` | Customer |
+| **Admin** | `admin@foodzone.com` | `admin123` | Admin / Partner |
 
 ---
 
-## 📸 Application Workflow
+## 🗺️ Application Endpoints & Routes
 
-1. **Sign In**: Log in using test credentials or register a new customer account.
-2. **Explore Cuisines**: Use category chips (🍕 *Pizza*, 🍗 *Biryani*, etc.) or search bar to browse dishes and restaurants.
-3. **Multi-Restaurant Cart**: Add dishes from multiple restaurants; review quantity and item subtotals.
-4. **Apply Coupons**: Enter promo code `WELCOME50` for instant 50% discount.
-5. **Checkout**: Select payment mode (UPI, Card, COD) and place order.
-6. **Live Invoice & Tracker**: View live cooking progress, itemized bill receipt, and delivery executive details.
-7. **Order History & Reorder**: Open *My Orders* to view order timeline or 1-click reorder any meal.
+| Route | Servlet / Page | Description |
+| :--- | :--- | :--- |
+| `/home` | `HomeServlet` ➔ `home.jsp` | Top restaurants, live search, and cuisine chips |
+| `/menu?restaurantId={id}` | `MenuServlet` ➔ `menu.jsp` | Restaurant dishes with sticky multi-cart bar |
+| `/cart.jsp` | `CartServlet` ➔ `cart.jsp` | Unified cart items, promo codes, and pricing |
+| `/checkout.jsp` | `CheckoutServlet` | Delivery address confirmation & payment mode |
+| `/order_conformation.jsp` | `order_conformation.jsp` | Live fulfillment stepper, digital bill & rating |
+| `/my-orders` | `OrderHistoryServlet` | Order history & 1-click reorder |
+| `/profile` | `ProfileServlet` ➔ `profile.jsp` | Account details & delivery address editor |
+| `/admin-dashboard` | `AdminDashboardServlet` | Partner KPIs, revenue, and live order status updater |
+| `/login.jsp` | `LoginServlet` | Sign In with demo quick-fill buttons |
+| `/logout` | `LogoutServlet` | Session invalidation and secure logout |
 
 ---
 
-## 📄 License
-This project is open-source and available under the [MIT License](LICENSE).
+## 📜 License
+This project is open-source under the [MIT License](LICENSE).

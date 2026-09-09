@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: foodzone-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: food
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./FoodApp/database/food_delivery.sql:/docker-entrypoint-initdb.d/init.sql
+
+  foodapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: foodzone-app
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: food
+      DB_USER: root
+      DB_PASSWORD: root
+
+volumes:
+  mysql-data:
