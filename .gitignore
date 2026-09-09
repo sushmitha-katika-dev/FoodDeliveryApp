@@ -1,0 +1,9 @@
+target/
+**/target/
+build/
+**/build/
+temp_tomcat/
+**/temp_tomcat/
+*.log
+.DS_Store
+Thumbs.db
